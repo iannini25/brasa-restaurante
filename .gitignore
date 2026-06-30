@@ -1,0 +1,25 @@
+# BRASA — arquivos que não vão pro repositório
+
+# Fonte do vídeo (pesado) — só o otimizado em assets/ é versionado, se desejar
+hero-source.mp4
+*-source.mp4
+higgsfield_download.mp4
+
+# Dependências / build
+node_modules/
+dist/
+.cache/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Logs / temporários
+*.log
+npm-debug.log*

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B0A09" />
+
+  <title>BRASA, Cozinha de Fogo | Alta gastronomia sobre brasas vivas</title>
+  <meta name="description" content="BRASA é uma cozinha autoral de fogo vivo em São Paulo. Menu degustação em seis tempos, balcão de chef e harmonização autoral. Reserve sua mesa." />
+  <meta name="author" content="BRASA" />
+  <meta name="keywords" content="restaurante, alta gastronomia, fogo vivo, brasa, menu degustação, chef's table, São Paulo, harmonização" />
+
+  <!-- Open Graph / social (URLs absolutas — crawlers não resolvem caminho relativo) -->
+  <meta property="og:type" content="restaurant.restaurant" />
+  <meta property="og:site_name" content="BRASA" />
+  <meta property="og:title" content="BRASA, Cozinha de Fogo" />
+  <meta property="og:description" content="Alta gastronomia sobre brasas vivas. Onde o fogo vira arte." />
+  <meta property="og:image" content="https://brasa.example/assets/hero-poster.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="2560" />
+  <meta property="og:image:height" content="1429" />
+  <meta property="og:image:alt" content="Chef finalizando um prato de magret de pato sob luminárias de cobre, com a brasa ao fundo." />
+  <meta property="og:url" content="https://brasa.example/" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BRASA, Cozinha de Fogo" />
+  <meta name="twitter:description" content="Alta gastronomia sobre brasas vivas. Onde o fogo vira arte." />
+  <meta name="twitter:image" content="https://brasa.example/assets/hero-poster.jpg" />
+  <meta name="twitter:image:alt" content="Chef finalizando um prato de magret de pato sob luminárias de cobre, com a brasa ao fundo." />
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="canonical" href="https://brasa.example/" />
+
+  <!-- Fonts: serifa elegante de alta gastronomia (Cormorant Garamond) + grotesca humanista (Hanken Grotesk) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- handshake antecipado p/ as CDNs do GSAP/Lenis -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <!-- Fontes sem bloquear o render: carrega async e vira stylesheet no onload.
+       display=swap já mostra o texto na fallback e troca quando a fonte chega. -->
+  <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Hanken+Grotesk:wght@300;400;500;600&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" />
+  </noscript>
+
+  <!-- Pré-carrega o poster (LCP) — WebP responsivo. type=image/webp faz navegadores
+       sem suporte ignorarem o preload (eles pegam o JPG do <picture>). -->
+  <link rel="preload" as="image" type="image/webp" href="assets/hero-poster.webp" fetchpriority="high"
+        imagesrcset="assets/hero-poster-mobile.webp 1280w, assets/hero-poster.webp 2560w"
+        imagesizes="100vw" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Dados estruturados: ajudam SEO e aparecem em buscas/Maps -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "BRASA",
+    "description": "Cozinha autoral de fogo vivo. Menu degustação em seis tempos, balcão de chef e harmonização autoral.",
+    "image": "https://brasa.example/assets/hero-poster.jpg",
+    "logo": "https://brasa.example/assets/favicon.svg",
+    "servesCuisine": ["Autoral", "Fogo vivo", "Alta gastronomia", "Contemporânea brasileira"],
+    "priceRange": "$$$$",
+    "acceptsReservations": true,
+    "hasMenu": "https://brasa.example/#menu",
+    "slogan": "Onde o fogo vira arte",
+    "url": "https://brasa.example/",
+    "telephone": "+55-11-3000-0000",
+    "email": "reservas@brasa.example",
+    "currenciesAccepted": "BRL",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Rua das Brasas, 120, Vila Madalena",
+      "addressLocality": "São Paulo",
+      "addressRegion": "SP",
+      "postalCode": "05435-000",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -23.5546,
+      "longitude": -46.6900
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Tuesday", "Wednesday", "Thursday"],
+        "opens": "19:00",
+        "closes": "23:30"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Friday", "Saturday"],
+        "opens": "19:00",
+        "closes": "00:30"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Sunday",
+        "opens": "18:00",
+        "closes": "22:30"
+      }
+    ],
+    "sameAs": ["https://instagram.com/brasa"]
+  }
+  </script>
+</head>
+
+<body>
+  <!-- Skip link (acessibilidade) -->
+  <a class="skip-link" href="#conteudo" data-i18n="a11y.skip">Pular para o conteúdo</a>
+
+  <!-- =====================================================================
+       SCROLL-NAV — barra fixa, mínima, que entra DEPOIS da hero.
+       Mantém a navegação acessível nas seções de baixo sem poluir o cinema
+       da hero. (A hero conserva a própria nav vertical.)
+       ===================================================================== -->
+  <header class="scrollnav" data-scrollnav>
+    <a class="scrollnav__brand" href="#hero" aria-label="BRASA, voltar ao topo">BRASA</a>
+
+    <nav class="scrollnav__nav" aria-label="Seções do site">
+      <a href="#casa" class="nav__link" data-navlink data-i18n="nav.casa">A Casa</a>
+      <a href="#menu" class="nav__link" data-navlink data-i18n="nav.menu">Menu</a>
+      <a href="#experiencia" class="nav__link" data-navlink data-i18n="nav.experiencia">Experiência</a>
+      <a href="#reservas" class="nav__link" data-navlink data-i18n="nav.reservas">Reservas</a>
+      <a href="#contato" class="nav__link" data-navlink data-i18n="nav.contato">Contato</a>
+    </nav>
+
+    <div class="scrollnav__actions">
+      <div class="lang-toggle" data-lang-toggle role="group" aria-label="Idioma do site / Site language">
+        <button type="button" data-lang="pt" class="is-active" aria-pressed="true">PT</button>
+        <span class="lang-toggle__sep" aria-hidden="true">·</span>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a href="#reservas" class="btn btn--mini" data-i18n="nav.reservar">Reservar</a>
+      <button class="scrollnav__burger" data-scrollnav-toggle aria-expanded="false" aria-controls="scrollnav-menu" aria-label="Abrir menu de seções" data-i18n-attr="aria-label:a11y.menu.sections">
+        <span></span><span></span>
+      </button>
+    </div>
+
+    <!-- dropdown mobile (auto-contido) -->
+    <div class="scrollnav__menu" id="scrollnav-menu" data-scrollnav-menu hidden>
+      <a href="#casa" class="nav__link" data-navlink data-i18n="nav.casa">A Casa</a>
+      <a href="#menu" class="nav__link" data-navlink data-i18n="nav.menu">Menu</a>
+      <a href="#experiencia" class="nav__link" data-navlink data-i18n="nav.experiencia">Experiência</a>
+      <a href="#reservas" class="nav__link" data-navlink data-i18n="nav.reservas">Reservas</a>
+      <a href="#contato" class="nav__link" data-navlink data-i18n="nav.contato">Contato</a>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <!-- ============================ HERO ============================ -->
+    <!-- .hero = trilho de scroll (alto). Dentro dele, .hero__stage fica "pinado"
+         enquanto a câmera mergulha no prato (sequência de frames no canvas).
+         Tudo funciona só com o poster; os frames (assets/frames/) entram como
+         upgrade no desktop. Fonte dos frames: assets/hero-brasa.mp4. -->
+    <section class="hero" id="hero" data-hero aria-label="Apresentação BRASA">
+      <div class="hero__stage">
+
+        <!-- Camada de mídia: a sequência de frames desenha aqui (desktop), com o
+             poster por baixo como fallback (mobile / reduced-motion / sem JS). -->
+        <div class="hero__media" data-media>
+          <!-- Canvas que desenha a sequência de frames (assets/frames/) a 60fps no
+               scroll. O "zoom" é o próprio push-in do vídeo de origem — sem scale.
+               Carrega só no desktop; sem JS/mobile/reduced-motion o poster assume. -->
+          <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
+          <!-- Fallback estático garantido (reduced-motion / vídeo ausente).
+               <picture>: telas até 768px baixam o poster leve (LCP em mobile). -->
+          <picture>
+            <source type="image/webp" media="(max-width: 768px)" srcset="assets/hero-poster-mobile.webp" />
+            <source type="image/webp" srcset="assets/hero-poster.webp" />
+            <source media="(max-width: 768px)" srcset="assets/hero-poster-mobile.jpg" />
+            <img class="hero__fallback" src="assets/hero-poster.jpg" width="2560" height="1429"
+                 fetchpriority="high" decoding="async"
+                 alt="Chef finalizando um magret de pato com flores comestíveis e redução de vinho, sob luminárias de cobre, com a brasa viva ao fundo." />
+          </picture>
+        </div>
+
+        <!-- Gradientes que dão legibilidade ao texto sem apagar a cena -->
+        <div class="hero__scrim" aria-hidden="true"></div>
+        <div class="hero__grain" aria-hidden="true"></div>
+
+        <!-- Linha de progresso do carregamento dos frames (some ao terminar) -->
+        <div class="hero__loader" data-hero-loader aria-hidden="true">
+          <span class="hero__loader-bar" data-hero-loader-bar></span>
+        </div>
+
+        <!-- Marca, topo-esquerda -->
+        <div class="hero__brand" data-fade>
+          <a href="#hero" class="brand" aria-label="BRASA, página inicial">
+            <span class="brand__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 32" width="14" height="19" fill="none">
+                <path d="M12 1c2.2 4.4 6.5 6.7 6.5 12.5 0 2-.7 3.6-1.8 4.8 1.1.7 2.3 2.4 2.3 4.7C19 30 15.6 31 12 31S5 30 5 23c0-2.3 1.2-4 2.3-4.7-1.1-1.2-1.8-2.8-1.8-4.8C5.5 7.7 9.8 5.4 12 1Z" fill="currentColor"/>
+              </svg>
+            </span>
+            <span class="brand__type">BRASA</span>
+          </a>
+          <span class="brand__tag" data-i18n="brand.tag">cozinha de fogo</span>
+        </div>
+
+        <!-- Navegação vertical, à direita -->
+        <nav class="hero__nav" aria-label="Navegação principal">
+          <button class="nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="nav-list" aria-label="Abrir menu" data-i18n-attr="aria-label:a11y.menu.open">
+            <span></span><span></span>
+            <em data-i18n="nav.label">Menu</em>
+          </button>
+          <ul class="nav__list" id="nav-list" data-fade>
+            <li><a href="#hero" class="nav__link is-active" data-navlink data-i18n="nav.inicio">Início</a></li>
+            <li><a href="#casa" class="nav__link" data-navlink data-i18n="nav.casa">A Casa</a></li>
+            <li><a href="#menu" class="nav__link" data-navlink data-i18n="nav.menu">Menu</a></li>
+            <li><a href="#experiencia" class="nav__link" data-navlink data-i18n="nav.experiencia">Experiência</a></li>
+            <li><a href="#reservas" class="nav__link" data-navlink data-i18n="nav.reservas">Reservas</a></li>
+            <li><a href="#contato" class="nav__link" data-navlink data-i18n="nav.contato">Contato</a></li>
+          </ul>
+          <div class="nav__social" data-fade>
+            <a href="https://instagram.com/brasa" target="_blank" rel="noopener noreferrer" aria-label="Instagram da BRASA (abre em nova aba)" data-i18n-attr="aria-label:a11y.instagram">IG</a>
+          </div>
+        </nav>
+
+        <!-- Conteúdo do hero, à esquerda -->
+        <div class="hero__content" data-content>
+          <p class="eyebrow" data-fade><span></span><span data-i18n="hero.eyebrow">Menu degustação · fogo vivo</span></p>
+          <h1 class="hero__title" data-fade data-i18n-html="hero.title">
+            Onde o fogo<br /><em>vira arte</em>
+          </h1>
+          <p class="hero__sub" data-fade data-i18n="hero.sub">
+            Cozinha autoral sobre brasas vivas. Ingredientes selecionados, técnica
+            apurada e uma experiência pensada nos mínimos detalhes, do primeiro
+            aroma à última colher.
+          </p>
+          <div class="hero__actions" data-fade>
+            <a href="#reservas" class="btn btn--primary">
+              <span data-i18n="hero.cta.reservar">Reservar uma mesa</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#menu" class="btn btn--ghost" data-i18n="hero.cta.menu">Ver o menu</a>
+          </div>
+        </div>
+
+        <!-- Legenda do prato: revela no fim do mergulho, junto à comida -->
+        <figure class="hero__dish" data-dish aria-hidden="true">
+          <figcaption>
+            <span class="dish__name" data-i18n="hero.dish.name">Magret de pato</span>
+            <span class="dish__desc" data-i18n="hero.dish.desc">redução de vinho · purê defumado · flores comestíveis</span>
+          </figcaption>
+        </figure>
+
+        <!-- Indicador de scroll -->
+        <div class="hero__cue" data-cue aria-hidden="true">
+          <span data-i18n="hero.cue">role para descobrir</span>
+          <i></i>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================ A CASA ============================ -->
+    <section id="casa" class="casa section" aria-labelledby="casa-title">
+      <div class="casa__grid">
+        <div class="casa__text reveal" data-reveal>
+          <p class="kicker"><span></span><span data-i18n="casa.kicker">O método</span></p>
+          <h2 class="display" id="casa-title" data-i18n-html="casa.title">
+            O fogo é o nosso método.<br /><em>A precisão, o nosso idioma.</em>
+          </h2>
+          <div class="prose">
+            <p data-i18n="casa.p1">
+              Na BRASA, tudo começa na lenha. Acendemos o fogo antes do salão abrir e
+              deixamos a brasa amadurecer até virar ingrediente, não apenas calor,
+              mas sabor, aroma e tempo.
+            </p>
+            <p data-i18n="casa.p2">
+              Cozinhar sobre brasa viva é aceitar que o fogo conduz. Nosso trabalho é
+              ouvi-lo: ler a cor das brasas, achar a distância exata da grelha, esperar
+              o ponto certo. Técnica antiga, conduzida com obsessão contemporânea.
+            </p>
+          </div>
+
+          <ul class="tenets" aria-label="Princípios da casa">
+            <li class="tenet">
+              <span class="tenet__title" data-i18n="casa.t1.title">Lenha &amp; carvão</span>
+              <span class="tenet__desc" data-i18n="casa.t1.desc">Fogo de madeira de lei. Sem gás, sem atalhos.</span>
+            </li>
+            <li class="tenet">
+              <span class="tenet__title" data-i18n="casa.t2.title">Produto nacional</span>
+              <span class="tenet__desc" data-i18n="casa.t2.desc">Pequenos produtores, colheita da semana, desperdício zero.</span>
+            </li>
+            <li class="tenet">
+              <span class="tenet__title" data-i18n="casa.t3.title">Sazonalidade</span>
+              <span class="tenet__desc" data-i18n="casa.t3.desc">O cardápio segue o calendário da natureza. O fogo, nunca.</span>
+            </li>
+          </ul>
+        </div>
+
+        <figure class="casa__media reveal" data-reveal>
+          <img src="assets/casa-brasa.jpg" width="1500" height="844" loading="lazy" decoding="async"
+               alt="Carne selada na brasa, fatiada sobre tábua de madeira, banhada pela luz quente do fogo." />
+          <figcaption class="casa__quote">
+            <span data-i18n="casa.quote">“A brasa não é o fim do prato. É o começo de tudo.”</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============================ MENU ============================ -->
+    <section id="menu" class="menu section" aria-labelledby="menu-title">
+      <header class="section__head reveal" data-reveal>
+        <p class="kicker"><span></span><span data-i18n="menu.kicker">Fogo vivo · à la carte</span></p>
+        <h2 class="display" id="menu-title" data-i18n="menu.title">O cardápio</h2>
+        <p class="section__lead" data-i18n="menu.lead">
+          Da brasa, em pratos para compartilhar. O cardápio muda com as estações
+          e com o que o fogo pede no dia.
+        </p>
+      </header>
+
+      <div class="menu__layout">
+        <!-- Cardápio: lista única de pratos, com preços -->
+        <div class="menu__main reveal" data-reveal>
+          <ul class="menu__list" aria-label="Pratos do cardápio">
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Couvert da casa</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">38</span>
+              </div>
+              <p class="dish__desc">Pães de fermentação natural assados na brasa, manteiga defumada de café.</p>
+            </li>
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Vieira &amp; fogo</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">92</span>
+              </div>
+              <p class="dish__desc">Vieira grelhada na própria concha, manteiga de algas, caldo de suas aparas.</p>
+            </li>
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Coração de alcachofra</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">96</span>
+              </div>
+              <p class="dish__desc">Alcachofra grelhada, tahine de avelã, limão queimado, dukkah.</p>
+            </li>
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Raízes nas cinzas</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">84</span>
+              </div>
+              <p class="dish__desc">Beterraba e aipo cozidos sob as cinzas, redução dos próprios sucos, avelã.</p>
+            </li>
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Polvo na lenha</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">142</span>
+              </div>
+              <p class="dish__desc">Polvo grelhado, pimentão queimado, batata ao murro, pimenta-biquinho.</p>
+            </li>
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Pesca do dia</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">138</span>
+              </div>
+              <p class="dish__desc">Peixe da costa selado na grelha, beurre blanc de brasa, ervas do quintal.</p>
+            </li>
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Costela de 12 horas</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">168</span>
+              </div>
+              <p class="dish__desc">Costela bovina no fogo lento, chimichurri de brasa, farofa de tutano.</p>
+            </li>
+            <li class="dish dish--signature">
+              <div class="dish__head">
+                <h3 class="dish__name">Magret de pato <span class="dish__flag" data-i18n="menu.signature">assinatura</span></h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">156</span>
+              </div>
+              <p class="dish__desc">Pato selado na brasa, purê defumado, redução de vinho, amoras e flores comestíveis.</p>
+            </li>
+            <li class="dish">
+              <div class="dish__head">
+                <h3 class="dish__name">Brasa doce</h3>
+                <span class="dish__rule" aria-hidden="true"></span>
+                <span class="dish__price">46</span>
+              </div>
+              <p class="dish__desc">Banana-da-terra assada na brasa, sorvete de rapadura, caramelo de cachaça.</p>
+            </li>
+          </ul>
+          <p class="menu__note" data-i18n="menu.note">Valores por pessoa, em reais (R$). Restrições alimentares acolhidas com aviso prévio.</p>
+        </div>
+
+        <!-- Sommelier embutido na seção: respostas prontas de harmonização -->
+        <aside class="menu__sommelier reveal" data-reveal data-sommelier aria-labelledby="somm-title">
+          <header class="somm__head">
+            <div>
+              <p class="somm__title" id="somm-title" data-i18n="somm.title">Sommelier BRASA</p>
+              <p class="somm__sub" data-i18n="somm.sub">Sugestões de harmonização, taça a taça.</p>
+            </div>
+          </header>
+
+          <div class="somm__log" data-somm-log data-lenis-prevent role="log" aria-live="polite" aria-atomic="false"></div>
+
+          <div class="somm__chips" data-somm-chips aria-label="Sugestões rápidas">
+            <button type="button" data-somm-chip="magret de pato">Magret de pato</button>
+            <button type="button" data-somm-chip="polvo na lenha">Polvo na lenha</button>
+            <button type="button" data-somm-chip="costela">Costela 12h</button>
+            <button type="button" data-somm-chip="brasa doce">Sobremesa</button>
+          </div>
+
+          <form class="somm__form" data-somm-form>
+            <label class="sr-only" for="somm-input" data-i18n="somm.inputlabel">Pergunte sobre harmonização</label>
+            <input id="somm-input" data-somm-input type="text" autocomplete="off"
+                   placeholder="Qual vinho combina com o magret?" data-i18n-attr="placeholder:somm.placeholder" />
+            <button type="submit" aria-label="Enviar pergunta" data-i18n-attr="aria-label:somm.send">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </form>
+          <p class="somm__disclaimer" data-i18n="somm.disclaimer">Sugestões geradas localmente. Conecte a um backend para respostas com IA.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ========================= A EXPERIÊNCIA ========================= -->
+    <section id="experiencia" class="exp section" aria-labelledby="exp-title">
+      <header class="section__head reveal" data-reveal>
+        <p class="kicker"><span></span><span data-i18n="exp.kicker">Balcão de chef</span></p>
+        <h2 class="display" id="exp-title" data-i18n="exp.title">Doze lugares. Uma fogueira. Uma noite.</h2>
+        <p class="section__lead" data-i18n="exp.lead">
+          A forma mais completa de viver a BRASA acontece no balcão de chef, uma
+          mesa de doze lugares de frente para a brasa, onde cada tempo é finalizado
+          diante de você. Reservas limitadas por noite.
+        </p>
+      </header>
+
+      <ol class="pillars reveal" data-reveal>
+        <li class="pillar">
+          <span class="pillar__num" aria-hidden="true">01</span>
+          <h3 class="pillar__title" data-i18n="exp.p1.title">Brasa viva</h3>
+          <p class="pillar__text" data-i18n="exp.p1.text">
+            Você janta de frente para o fogo. Cada prato é selado, defumado e
+            finalizado no balcão, ao alcance da mão e do aroma.
+          </p>
+        </li>
+        <li class="pillar">
+          <span class="pillar__num" aria-hidden="true">02</span>
+          <h3 class="pillar__title" data-i18n="exp.p2.title">Harmonização autoral</h3>
+          <p class="pillar__text" data-i18n="exp.p2.text">
+            Nosso sommelier conduz a noite taça a taça, vinhos naturais, saquês e
+            fermentados que conversam com a defumação da brasa.
+          </p>
+        </li>
+        <li class="pillar">
+          <span class="pillar__num" aria-hidden="true">03</span>
+          <h3 class="pillar__title" data-i18n="exp.p3.title">Mesa do chef</h3>
+          <p class="pillar__text" data-i18n="exp.p3.text">
+            Doze lugares por noite, um único turno. Um ritmo só seu, conduzido pela
+            cozinha, do primeiro fogo ao último doce.
+          </p>
+        </li>
+      </ol>
+
+      <figure class="exp__band reveal" data-reveal>
+        <!-- Celulares (≤768px) baixam o poster mobile (leve); desktop fica no JPG full
+             (2560, maior fidelidade) — sem regressão de qualidade na faixa. -->
+        <picture>
+          <source type="image/webp" media="(max-width: 768px)" srcset="assets/hero-poster-mobile.webp" />
+          <source media="(max-width: 768px)" srcset="assets/hero-poster-mobile.jpg" />
+          <img src="assets/hero-poster.jpg" width="2560" height="1429" loading="lazy" decoding="async"
+               alt="O balcão de chef da BRASA: o cozinheiro emprata diante da brasa, sob luminárias de cobre." />
+        </picture>
+        <figcaption class="exp__band-cap">
+          <span data-i18n="exp.band">Do balcão, você vê o fogo trabalhar.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ============================ RESERVAS ============================ -->
+    <section id="reservas" class="resv section" aria-labelledby="resv-title">
+      <div class="resv__grid">
+        <div class="resv__intro reveal" data-reveal>
+          <p class="kicker"><span></span><span data-i18n="resv.kicker">Ter–Dom · a partir das 19h</span></p>
+          <h2 class="display" id="resv-title" data-i18n="resv.title">Reserve sua mesa</h2>
+          <p class="section__lead" data-i18n="resv.lead">
+            Atendemos de terça a domingo, a partir das 19h. Para o balcão de chef,
+            recomendamos reserva com alguns dias de antecedência.
+          </p>
+          <ul class="resv__facts">
+            <li><span class="resv__fact-k" data-i18n="resv.fact.hours.k">Funcionamento</span><span class="resv__fact-v" data-i18n="resv.fact.hours.v">Ter–Dom · a partir das 19h</span></li>
+            <li><span class="resv__fact-k" data-i18n="resv.fact.phone.k">Telefone</span><span class="resv__fact-v"><a href="tel:+551130000000">+55 11 3000-0000</a></span></li>
+            <li><span class="resv__fact-k" data-i18n="resv.fact.reply.k">Resposta</span><span class="resv__fact-v" data-i18n="resv.fact.reply.v">Confirmamos em até 2 horas</span></li>
+          </ul>
+          <a class="btn btn--whats btn--whats-lg" data-whats-reserve href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8.5 7.7c.2-.5.4-.5.7-.5h.6c.2 0 .4 0 .6.5l.8 2c.1.2 0 .4-.1.6l-.5.6c-.2.2-.3.4-.1.7.5.9 1.3 1.7 2.2 2.2.3.2.5.1.7-.1l.6-.6c.2-.2.4-.2.6-.1l2 .8c.4.2.5.4.5.6v.6c0 .3 0 .6-.5.8-.5.3-1.3.6-2 .5-2.2-.2-4.9-2.4-6-4.4-.4-.7-.9-1.8-.9-2.9 0-.5.2-1 .5-1.5Z" fill="currentColor"/></svg>
+            <span data-i18n="resv.whats">Reservar pelo WhatsApp</span>
+          </a>
+        </div>
+
+        <form class="resform reveal" data-resform data-reveal novalidate aria-labelledby="resv-title" aria-describedby="resform-status">
+          <div class="field">
+            <label for="r-nome" data-i18n="form.nome">Nome completo</label>
+            <input id="r-nome" name="nome" type="text" autocomplete="name" required maxlength="80" placeholder="Como devemos chamar você?" />
+            <span class="field__err" id="err-nome" data-err-for="nome" aria-live="polite"></span>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="r-data" data-i18n="form.data">Data</label>
+              <input id="r-data" name="data" type="date" required />
+              <span class="field__err" id="err-data" data-err-for="data" aria-live="polite"></span>
+            </div>
+            <div class="field">
+              <label for="r-hora" data-i18n="form.horario">Horário</label>
+              <input id="r-hora" name="horario" type="time" required min="18:00" max="23:30" step="900" />
+              <span class="field__err" id="err-horario" data-err-for="horario" aria-live="polite"></span>
+            </div>
+            <div class="field field--narrow">
+              <label for="r-pessoas" data-i18n="form.pessoas">Pessoas</label>
+              <input id="r-pessoas" name="pessoas" type="number" inputmode="numeric" min="1" max="20" value="2" required />
+              <span class="field__err" id="err-pessoas" data-err-for="pessoas" aria-live="polite"></span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="r-obs"><span data-i18n="form.obs">Observações</span> <span class="field__opt" data-i18n="form.optional">(opcional)</span></label>
+            <textarea id="r-obs" name="observacoes" rows="3" maxlength="400" placeholder="Aniversário, restrições alimentares, balcão de chef…"></textarea>
+          </div>
+          <div class="resform__actions">
+            <button type="submit" class="btn btn--primary">
+              <span data-i18n="form.submit">Enviar pedido de reserva</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="resform__or" data-i18n="form.or">ou</span>
+            <a class="btn btn--whats" data-whats-reserve href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8.5 7.7c.2-.5.4-.5.7-.5h.6c.2 0 .4 0 .6.5l.8 2c.1.2 0 .4-.1.6l-.5.6c-.2.2-.3.4-.1.7.5.9 1.3 1.7 2.2 2.2.3.2.5.1.7-.1l.6-.6c.2-.2.4-.2.6-.1l2 .8c.4.2.5.4.5.6v.6c0 .3 0 .6-.5.8-.5.3-1.3.6-2 .5-2.2-.2-4.9-2.4-6-4.4-.4-.7-.9-1.8-.9-2.9 0-.5.2-1 .5-1.5Z" fill="currentColor"/></svg>
+              <span data-i18n="resv.whats">WhatsApp</span>
+            </a>
+          </div>
+          <p class="resform__status" data-resform-status id="resform-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================ CONTATO ============================ -->
+    <section id="contato" class="contato section" aria-labelledby="contato-title">
+      <div class="contato__grid">
+        <div class="contato__info reveal" data-reveal>
+          <p class="kicker"><span></span><span data-i18n="contato.kicker">Vila Madalena, SP</span></p>
+          <h2 class="display" id="contato-title" data-i18n="contato.title">Onde o fogo mora</h2>
+
+          <dl class="contato__list">
+            <div class="contato__item">
+              <dt data-i18n="contato.address.k">Endereço</dt>
+              <dd>Rua das Brasas, 120, Vila Madalena<br />São Paulo · SP · 05435-000</dd>
+            </div>
+            <div class="contato__item">
+              <dt data-i18n="contato.hours.k">Horário</dt>
+              <dd>
+                <span data-i18n="contato.hours.v1">Ter a Qui · 19h–23h30</span><br />
+                <span data-i18n="contato.hours.v2">Sex e Sáb · 19h–00h30</span><br />
+                <span data-i18n="contato.hours.v3">Dom · 18h–22h30</span>
+              </dd>
+            </div>
+            <div class="contato__item">
+              <dt data-i18n="contato.contact.k">Fale conosco</dt>
+              <dd>
+                <a href="tel:+551130000000">+55 11 3000-0000</a><br />
+                <a href="mailto:reservas@brasa.example">reservas@brasa.example</a><br />
+                <a href="https://instagram.com/brasa" target="_blank" rel="noopener">@brasa</a>
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="contato__map reveal" data-reveal>
+          <!-- Mapa lazy: só baixa quando entra na viewport. Sem chave de API. -->
+          <iframe
+            title="Mapa da localização da BRASA na Vila Madalena, São Paulo"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+            src="https://www.google.com/maps?q=Vila+Madalena,+S%C3%A3o+Paulo,+SP&z=14&output=embed"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ RODAPÉ ============================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__top">
+      <a href="#hero" class="footer__brand" aria-label="BRASA, voltar ao topo">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 32" width="13" height="17" fill="none">
+            <path d="M12 1c2.2 4.4 6.5 6.7 6.5 12.5 0 2-.7 3.6-1.8 4.8 1.1.7 2.3 2.4 2.3 4.7C19 30 15.6 31 12 31S5 30 5 23c0-2.3 1.2-4 2.3-4.7-1.1-1.2-1.8-2.8-1.8-4.8C5.5 7.7 9.8 5.4 12 1Z" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="footer__type">BRASA</span>
+      </a>
+
+      <nav class="footer__nav" aria-label="Navegação do rodapé">
+        <a href="#casa" data-navlink data-i18n="nav.casa">A Casa</a>
+        <a href="#menu" data-navlink data-i18n="nav.menu">Menu</a>
+        <a href="#experiencia" data-navlink data-i18n="nav.experiencia">Experiência</a>
+        <a href="#reservas" data-navlink data-i18n="nav.reservas">Reservas</a>
+        <a href="#contato" data-navlink data-i18n="nav.contato">Contato</a>
+        <a href="https://instagram.com/brasa" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+    </div>
+
+    <div class="footer__bottom">
+      <span class="footer__seal" data-i18n="footer.seal">cozinha de fogo · desde 2026</span>
+      <span class="footer__credit">
+        <span data-i18n="footer.rights">© 2026 BRASA. Todos os direitos reservados.</span>
+      </span>
+    </div>
+  </footer>
+
+  <!-- O sommelier agora vive embutido na seção #menu (caixa .menu__sommelier). -->
+
+  <!-- Scripts: defer mantém a ordem e não bloqueia o parse/LCP -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script defer src="js/main.js"></script>
+</body>
+</html>
