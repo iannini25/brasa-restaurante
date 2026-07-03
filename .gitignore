@@ -1,25 +1,40 @@
-# BRASA — arquivos que não vão pro repositório
+# ── Clones de referência de componentes (PARTE A do prompts/03) ──
+# Reclonáveis com prompts/03-catalogar-componentes-externos.md.
+# Versione apenas components-catalog.md, não os clones.
+_ref/
 
-# Fonte do vídeo (pesado) — só o otimizado em assets/ é versionado, se desejar
-hero-source.mp4
-*-source.mp4
-higgsfield_download.mp4
+# ── Fontes pessoais (saída do prompts/02) ──
+# NÃO versionar: são as fontes do SEU disco, várias comerciais/licenciadas
+# (Neue Haas, Druk, Helvetica…) — publicá-las violaria as licenças.
+# Cada usuário gera as suas rodando prompts/02-ingerir-minhas-fontes.md.
+fonts-woff2/
+fonts-manifest.json
+specimen.html
+showcase/fonts/
 
-# Dependências / build
-node_modules/
-dist/
-.cache/
-
-# Sistema operacional
+# ── SO / editor ──
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# Editores
 .vscode/
 .idea/
 *.swp
 
-# Logs / temporários
+# ── Site BRASA: arquivos que NÃO vão pro repositório ──
+# imagens-fonte originais (as versões otimizadas ficam em assets/)
+assets/source/
+# temporários de screenshot / QA
+_shot.html
+_diag.html
+*.bak
+# vídeos-fonte pesados (só o otimizado em assets/ é versionado)
+hero-source.mp4
+*-source.mp4
+higgsfield_download.mp4
+# dependências / build / cache
+node_modules/
+dist/
+.cache/
+# logs
 *.log
 npm-debug.log*

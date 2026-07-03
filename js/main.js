@@ -312,7 +312,8 @@ function initNav() {
 function initReveals() {
   const items = $$('[data-reveal]');
   if (!items.length) return;
-  if (prefersReduced || !('IntersectionObserver' in window)) return; // tudo já visível
+  // hook de QA (?static): revela tudo p/ screenshots fiéis. + reduced-motion / sem IO.
+  if (prefersReduced || location.search.includes('static') || !('IntersectionObserver' in window)) return;
 
   document.documentElement.classList.add('reveals-armed');
   // rede de segurança: se o observer nunca acordar (ambiente estranho), revela tudo.
@@ -395,6 +396,7 @@ function buildWhatsAppReservation(data = {}) {
     ''
   ];
   if (data.nome)       lines.push(`• Nome: ${data.nome}`);
+  if (data.ambiente)   lines.push(`• Ambiente: ${data.ambiente}`);
   if (dataFmt)         lines.push(`• Data: ${dataFmt}`);
   if (data.horario)    lines.push(`• Horário: ${data.horario}`);
   if (data.pessoas)    lines.push(`• Pessoas: ${data.pessoas}`);
@@ -416,6 +418,7 @@ function readReservation(form) {
   const fd = new FormData(form);
   return {
     nome: (fd.get('nome') || '').toString().trim(),
+    ambiente: (fd.get('ambiente') || '').toString(),
     data: (fd.get('data') || '').toString(),
     horario: (fd.get('horario') || '').toString(),
     pessoas: (fd.get('pessoas') || '').toString(),
@@ -443,6 +446,46 @@ function initReservation() {
   }
 
   if (!form) return;
+
+  /* ---- experiência de reserva: data mínima, ambiente, stepper, horários rápidos ---- */
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const dateEl = form.elements['data'];
+  const timeEl = form.elements['horario'];
+  const pessoasEl = form.elements['pessoas'];
+  const ambienteEl = form.querySelector('[data-ambiente-value]');
+  const ambBtns = $$('[data-ambiente-opt]', form);
+  const timeChips = $$('[data-time]', form);
+
+  // data mínima = hoje (o seletor nativo já bloqueia datas passadas)
+  if (dateEl) {
+    const d = new Date();
+    dateEl.min = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  }
+
+  // ambiente (Salão / Balcão de chef)
+  const setAmbiente = (btn) => {
+    ambBtns.forEach((x) => { const on = x === btn; x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', String(on)); });
+    if (ambienteEl && btn) ambienteEl.value = btn.dataset.ambienteOpt;
+    refreshWhats();
+  };
+  ambBtns.forEach((b) => b.addEventListener('click', () => setAmbiente(b)));
+
+  // stepper de pessoas (− / +)
+  $$('[data-step]', form).forEach((b) => b.addEventListener('click', () => {
+    if (!pessoasEl) return;
+    const min = parseInt(pessoasEl.min, 10) || 1, max = parseInt(pessoasEl.max, 10) || 20;
+    let v = parseInt(pessoasEl.value, 10); if (isNaN(v)) v = 2;
+    pessoasEl.value = Math.max(min, Math.min(max, v + parseInt(b.dataset.step, 10)));
+    refreshWhats();
+  }));
+
+  // horários com boa disponibilidade (preenchem o campo)
+  const syncTimeChips = () => timeChips.forEach((x) => x.classList.toggle('is-active', !!timeEl && x.dataset.time === timeEl.value));
+  timeChips.forEach((b) => b.addEventListener('click', () => { if (timeEl) timeEl.value = b.dataset.time; syncTimeChips(); refreshWhats(); }));
+  if (timeEl) timeEl.addEventListener('input', syncTimeChips);
+
+  // volta o form ao estado inicial (após envio) incl. ambiente e chips
+  const resetExtras = () => { if (ambBtns[0]) setAmbiente(ambBtns[0]); syncTimeChips(); };
 
   const fieldError = (name, msg) => {
     const el = $(`[data-err-for="${name}"]`, form);
@@ -494,12 +537,15 @@ function initReservation() {
     // Por ora confirmamos localmente e deixamos o WhatsApp como canal direto.
     refreshWhats();
     if (status) {
+      const amb = data.ambiente ? ` no <strong>${escapeHTML(data.ambiente)}</strong>` : '';
       status.innerHTML = `Recebemos seu pedido, <strong>${escapeHTML(data.nome.split(' ')[0])}</strong>. ` +
-        `Confirmaremos para <strong>${escapeHTML(formatDateBR(data.data))}</strong> às ` +
-        `<strong>${escapeHTML(data.horario)}</strong> em até 2 horas. Prefere agilizar? Use o WhatsApp acima.`;
+        `Mesa para <strong>${escapeHTML(data.pessoas)}</strong>${amb}, ` +
+        `<strong>${escapeHTML(formatDateBR(data.data))}</strong> às <strong>${escapeHTML(data.horario)}</strong>. ` +
+        `Confirmamos em até 2 horas, ou agilize pelo WhatsApp ao lado.`;
       status.className = 'resform__status is-ok';
     }
     form.reset();
+    resetExtras();
     refreshWhats();
   });
 
@@ -516,6 +562,7 @@ function escapeHTML(s) {
    9. SOMMELIER VIRTUAL — chat mockado, pronto p/ backend Anthropic
    ========================================================================= */
 const PAIRINGS = [
+  { keys: ['ancho', 'bife', 'carne', 'maturad', 'chorizo', 't-bone', 'parrilla'], wine: 'Malbec de altitude (ou Cabernet Franc)', note: 'taninos maduros e fruta concentrada seguram a gordura e o defumado da parrilla. Um Syrah encorpado também encara o ancho maturado.' },
   { keys: ['magret', 'pato'],            wine: 'Pinot Noir de clima frio',     note: 'fruta vermelha e leve defumado acompanham a pele crocante e a redução de vinho. Um Syrah do norte do Rhône também brilha.' },
   { keys: ['vieira'],                    wine: 'Chablis mineral',              note: 'a acidez corta a manteiga de algas; um espumante brut nature faz o mesmo papel.' },
   { keys: ['polvo'],                     wine: 'Albariño (ou Vinho Verde)',    note: 'salino e cítrico, conversa com o pimentão queimado e a batata ao murro.' },
@@ -523,7 +570,8 @@ const PAIRINGS = [
   { keys: ['peixe', 'pesca'],            wine: 'Borgonha branco (ou Riesling seco)', note: 'a brasa pede acidez e tensão para equilibrar o beurre blanc.' },
   { keys: ['alcachofra'],               wine: 'Fino / Manzanilla (xerez seco)', note: 'a alcachofra é traiçoeira para vinhos; um xerez seco, ou um saquê Junmai, resolve com elegância.' },
   { keys: ['raíz', 'raiz', 'beterraba', 'cinza'], wine: 'Gamay (Beaujolais), levemente gelado', note: 'um tinto leve e terroso ecoa a doçura das raízes assadas nas cinzas.' },
-  { keys: ['brasa doce', 'sobremesa', 'banana', 'doce', 'rapadura'], wine: 'Tawny 10 anos (ou cachaça envelhecida)', note: 'o caramelo de cachaça da sobremesa se repete na taça.' }
+  { keys: ['brasa doce', 'sobremesa', 'banana', 'doce', 'rapadura'], wine: 'Tawny 10 anos (ou cachaça envelhecida)', note: 'o caramelo de cachaça da sobremesa se repete na taça.' },
+  { keys: ['couvert', 'pão', 'pao', 'manteiga', 'entrada'], wine: 'Espumante brut nature', note: 'as borbulhas limpam o paladar e abrem a noite; a acidez conversa com a manteiga defumada de café.' }
 ];
 
 function sommelierSuggest(question) {
@@ -575,12 +623,32 @@ function initSommelier() {
   };
 
   // saudação inicial — a caixa é sempre visível na seção
-  addMsg('Boa noite. Sou o sommelier da BRASA. Toque num atalho ou pergunte — eu sugiro a taça certa.', 'bot');
+  addMsg('Boa noite. Sou o sommelier da BRASA. Toque num atalho ou pergunte, eu sugiro a taça certa.', 'bot');
 
+  // bolha de "digitando" (3 pontos) enquanto a resposta é montada
+  const showTyping = () => {
+    const el = document.createElement('div');
+    el.className = 'somm__msg somm__msg--bot somm__typing';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<span></span><span></span><span></span>';
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  };
+
+  let asking = false;
   const ask = async (question) => {
+    if (asking) return;              // evita fila dupla em cliques rápidos
+    asking = true;
     addMsg(question, 'user');
-    const answer = await askSommelierAPI(question).catch(() => sommelierSuggest(question));
+    const typing = showTyping();
+    const [answer] = await Promise.all([
+      askSommelierAPI(question).catch(() => sommelierSuggest(question)),
+      new Promise((r) => setTimeout(r, prefersReduced ? 0 : 620))  // pausa curta p/ dar naturalidade
+    ]);
+    typing.remove();
     addMsg(answer, 'bot');
+    asking = false;
   };
 
   if (form && input) {
@@ -603,37 +671,64 @@ const I18N = {
   // EN: esqueleto — preenchido para nav, hero, títulos de seção e CTAs.
   // O corpo de texto mais longo cai no PT por ora (TODO: traduzir).
   en: {
-    'nav.inicio': 'Home', 'nav.casa': 'The House', 'nav.menu': 'Menu',
+    'nav.inicio': 'Home', 'nav.casa': 'The House', 'nav.origem': 'Origin', 'nav.menu': 'Menu',
     'nav.experiencia': 'Experience', 'nav.reservas': 'Reservations',
     'nav.contato': 'Contact', 'nav.reservar': 'Book', 'nav.label': 'Menu',
-    'brand.tag': 'fire kitchen',
-    'hero.eyebrow': 'Tasting menu · live fire',
+    'brand.tag': 'fire kitchen · SP',
+    'hero.eyebrow': 'Live embers · long dry-age',
     'hero.title': 'Where fire<br /><em>becomes art</em>',
-    'hero.sub': 'Authorial cooking over live embers. Selected ingredients, precise technique and an experience considered down to the smallest detail, from the first aroma to the last spoonful.',
+    'hero.sub': 'Dry-aged cuts over live wood embers. Precise technique, the exact point, and a night considered down to the smallest detail, from the first aroma to the last ember.',
     'hero.cta.reservar': 'Book a table', 'hero.cta.menu': 'See the menu',
     'hero.dish.name': 'Duck magret', 'hero.dish.desc': 'wine reduction · smoked purée · edible flowers',
     'hero.cue': 'scroll to discover',
     'casa.kicker': 'The method',
-    'casa.title': 'Fire is our method.<br /><em>Precision, our language.</em>',
+    'casa.title': 'Fire is the method.<br /><em>Precision, the language.</em>',
+    'casa.p1': 'We light the wood before the room opens and let the embers mature until they become an ingredient, not just heat, but flavour, aroma and time.',
+    'casa.p2': 'Cooking over live embers means accepting that the fire leads. Our job is to listen: read the colour of the coals, find the exact height of the grill, wait for the right point. Old technique, contemporary obsession.',
+    'casa.t1.title': 'Wood, not gas', 'casa.t1.desc': 'Hardwood fire, start to finish. No shortcuts.',
+    'casa.t2.title': 'Sourced with care', 'casa.t2.desc': 'Small producers, harvest of the week, zero waste.',
+    'casa.t3.title': 'The exact point', 'casa.t3.desc': 'Every cut leaves in its own time. The fire decides; we obey.',
+    'casa.quote': '“The ember isn’t the end of the dish. It’s the beginning of everything.”',
+    'origem.kicker': 'The origin',
+    'origem.title': 'Flavour begins <em>before</em> the fire.',
+    'origem.lead': 'Good beef doesn’t hide in the embers, it reveals itself in them. That’s why we choose the cut, the origin and the dry-age before lighting the first log.',
+    'origem.stat.num': '45', 'origem.stat.unit': 'days',
+    'origem.stat.label': 'of dry-aging, to the point of each cut',
+    'origem.copy': 'Dry-aging concentrates flavour and softens the fibre. It’s patience turned into texture, the kind of detail you feel on the first bite and can’t quite explain. We can: time, temperature and real fire.',
+    'origem.f1.k': 'Selected cuts', 'origem.f1.v': 'Ribeye, chorizo, short rib, T-bone',
+    'origem.f2.k': 'Fire', 'origem.f2.v': 'Quebracho wood and sourced charcoal',
+    'origem.f3.k': 'Waste', 'origem.f3.v': 'Trimmings become stock, fat becomes seasoning',
+    'origem.cap': 'From the butcher to the fire: the cut you see is the cut you eat.',
     'menu.kicker': 'Live fire · à la carte', 'menu.title': 'The menu',
     'menu.lead': 'From the fire, plates to share. The menu changes with the seasons and with what the fire asks for that day.',
     'menu.signature': 'signature',
     'menu.note': 'Prices per person, in reais (R$). Dietary restrictions accommodated with advance notice.',
-    'exp.kicker': "Chef's counter", 'exp.title': 'Twelve seats. One fire. One night.',
-    'exp.p1.title': 'Live fire', 'exp.p2.title': 'Authorial pairing', 'exp.p3.title': "Chef's table",
-    'exp.band': 'From the counter, you watch the fire work.',
-    'resv.kicker': 'Tue–Sun · from 7pm', 'resv.title': 'Book your table', 'resv.whats': 'Book via WhatsApp',
-    'resv.fact.hours.k': 'Hours', 'resv.fact.phone.k': 'Phone', 'resv.fact.reply.k': 'Reply',
+    'exp.kicker': "Chef's counter", 'exp.title': 'Twelve seats.<br />One fire. One night.',
+    'exp.lead': 'The fullest way to live BRASA is at the chef’s counter, twelve seats facing the embers, where every course is finished in front of you. One seating per night. Limited reservations.',
+    'exp.p1.title': 'Fire in front of you', 'exp.p1.text': 'Every dish is seared, smoked and finished at the counter, within reach of your hand, the aroma and the cooks.',
+    'exp.p2.title': 'Authorial pairing', 'exp.p2.text': 'Our sommelier leads the night glass by glass, natural wines, sakes and ferments that talk to the smoke of the embers.',
+    'exp.p3.title': 'A rhythm all yours', 'exp.p3.text': 'Twelve seats, one seating. From the first fire to the last dessert, the kitchen sets the pace, in its time and yours.',
+    'exp.cap': 'From the counter, you watch the fire work.',
+    'exp.cta': 'Claim my seat at the counter', 'exp.cta.note': '12 seats per night · we confirm within 2 hours',
+    'resv.kicker': 'Tue–Sun · from 7pm', 'resv.title': 'Book your table',
+    'resv.lead': 'We serve Tuesday to Sunday, from 7pm. For the chef’s counter, book a few days ahead, the twelve seats go fast.',
+    'resv.whats': 'Book via WhatsApp',
+    'resv.fact.hours.k': 'Hours', 'resv.fact.hours.v': 'Tue–Sun · from 7pm', 'resv.fact.phone.k': 'Phone', 'resv.fact.reply.k': 'Reply',
     'resv.fact.reply.v': 'We confirm within 2 hours',
     'form.nome': 'Full name', 'form.data': 'Date', 'form.horario': 'Time', 'form.pessoas': 'Guests',
     'form.obs': 'Notes', 'form.optional': '(optional)', 'form.submit': 'Send reservation request', 'form.or': 'or',
+    'form.ambiente': 'Where would you like to sit', 'form.amb.salao': 'Dining room', 'form.amb.salao.hint': 'tables & fire',
+    'form.amb.balcao': "Chef's counter", 'form.amb.balcao.hint': '12 seats · 6 courses', 'form.horarios': 'Times with good availability',
+    'resv.facts.title': 'The house',
     'contato.kicker': 'Vila Madalena, SP', 'contato.title': 'Where the fire lives',
     'contato.address.k': 'Address', 'contato.hours.k': 'Hours', 'contato.contact.k': 'Reach us',
+    'contato.hours.v1': 'Tue–Thu · 7pm–11:30pm', 'contato.hours.v2': 'Fri & Sat · 7pm–12:30am', 'contato.hours.v3': 'Sun · 6pm–10:30pm',
+    'footer.cta.title': 'Light up your night<br /><em>on the embers.</em>', 'footer.cta.btn': 'Book a table',
     'footer.seal': 'fire kitchen · since 2026', 'footer.rights': '© 2026 BRASA. All rights reserved.',
-    'somm.fab': 'Sommelier', 'somm.title': 'BRASA Sommelier', 'somm.sub': 'Pairing suggestions, glass by glass.',
-    'somm.inputlabel': 'Ask about a pairing', 'somm.placeholder': 'Which wine goes with the magret?',
+    'somm.title': 'BRASA Sommelier', 'somm.sub': 'Tap a dish and get the right glass.',
+    'somm.inputlabel': 'Ask about a pairing', 'somm.placeholder': 'Which wine goes with the ribeye?',
     'somm.disclaimer': 'Suggestions generated locally. Connect a backend for AI answers.',
-    'somm.close': 'Close sommelier', 'somm.send': 'Send question',
+    'somm.send': 'Send question',
     'a11y.skip': 'Skip to content', 'a11y.menu.sections': 'Open sections menu',
     'a11y.menu.open': 'Open menu', 'a11y.instagram': 'BRASA on Instagram (opens in new tab)'
   }
@@ -689,6 +784,19 @@ function initI18n() {
   });
 }
 
+/* Parallax leve nos fundos [data-parallax] (ex.: salão da Experiência). GPU-safe
+   (só transform), com scrub amarrado ao ScrollTrigger. Respeita reduced-motion. */
+function initParallax() {
+  if (prefersReduced) return;
+  $$('[data-parallax]').forEach((el) => {
+    const section = el.closest('section') || el;
+    gsap.fromTo(el, { yPercent: -9 }, {
+      yPercent: 9, ease: 'none',
+      scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: true }
+    });
+  });
+}
+
 /* =========================================================================
    11. BOOT
    ========================================================================= */
@@ -705,13 +813,14 @@ function boot() {
   gsap.registerPlugin(ScrollTrigger);
   initLenis();
   introTimeline();
+  initParallax();
 
   // Só o desktop tem cena (pin + frames). No mobile/reduced a hero é estática (pôster).
   // Os frames carregam JUNTO com a cena (mesma media query) → resize mobile↔desktop
   // sempre fica consistente, e nada baixa frames fora do desktop.
   const mm = gsap.matchMedia();
   mm.add('(min-width: 861px)', () => {
-    if (prefersReduced) return;            // CSS já cuida do estado estático
+    if (prefersReduced || location.search.includes('static')) return; // CSS/QA já cuidam do estado estático
     initHeroFrames();
     buildDesktopScene();                   // scroll define o frame-alvo; o loop rAF desenha (suave)
   });
