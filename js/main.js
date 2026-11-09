@@ -724,7 +724,7 @@ const I18N = {
     'contato.address.k': 'Address', 'contato.hours.k': 'Hours', 'contato.contact.k': 'Reach us',
     'contato.hours.v1': 'Tue–Thu · 7pm–11:30pm', 'contato.hours.v2': 'Fri & Sat · 7pm–12:30am', 'contato.hours.v3': 'Sun · 6pm–10:30pm',
     'footer.cta.title': 'Light up your night<br /><em>on the embers.</em>', 'footer.cta.btn': 'Book a table',
-    'footer.seal': 'fire kitchen · since 2026', 'footer.rights': '© 2026 BRASA. All rights reserved.',
+    'footer.seal': 'fire kitchen · since 2026', 'footer.rights': '© 2026 BRASA. All rights reserved.', 'footer.signBy': 'Made by',
     'somm.title': 'BRASA Sommelier', 'somm.sub': 'Tap a dish and get the right glass.',
     'somm.inputlabel': 'Ask about a pairing', 'somm.placeholder': 'Which wine goes with the ribeye?',
     'somm.disclaimer': 'Suggestions generated locally. Connect a backend for AI answers.',

@@ -89,6 +89,21 @@
     "sameAs": ["https://instagram.com/brasa"]
   }
   </script>
+<style id="bi-sign-css">
+.bi-sign{--bi-size:13px;display:inline-flex;align-items:center;gap:.6em;font-size:var(--bi-size);line-height:1;color:inherit;white-space:nowrap}
+.bi-sign__by{opacity:.62}
+.bi-sign__link{display:inline-flex;align-items:center;gap:.5em;color:inherit;text-decoration:none;font-weight:600}
+.bi-sign__mark{flex:none;width:1.85em;height:1.85em;border-radius:.45em;background:#a3e635;display:grid;place-items:center;transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.bi-sign__mark svg{display:block;height:68%;width:auto;fill:#0b0f0c}
+.bi-sign__mark .bi-sign__dot{transform-box:fill-box;transform-origin:center;transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.bi-sign__name{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;padding-bottom:.18em;transition:background-size .35s cubic-bezier(.22,1,.36,1)}
+.bi-sign__link:hover .bi-sign__mark{transform:rotate(-6deg) scale(1.08)}
+.bi-sign__link:hover .bi-sign__dot{transform:translate(4px,-6px)}
+.bi-sign__link:hover .bi-sign__name{background-size:100% 1px}
+.bi-sign__link:focus-visible{outline:2px solid #a3e635;outline-offset:4px;border-radius:.3em}
+@media (prefers-reduced-motion:reduce){.bi-sign *{transition:none!important}}
+.bi-sign-row{position:relative;z-index:2;display:flex;justify-content:center;padding:clamp(20px,3vw,28px) 16px clamp(16px,2vw,22px)}
+</style>
 </head>
 
 <body>
@@ -733,7 +748,16 @@
         </span>
       </div>
     </div>
-  </footer>
+  <div class="bi-sign-row">
+<div class="bi-sign">
+  <span class="bi-sign__by" data-i18n="footer.signBy">Feito por</span>
+  <a class="bi-sign__link" href="https://www.bernardoiannini.com" target="_blank" rel="noopener" aria-label="Bernardo Iannini, abrir o site">
+    <span class="bi-sign__mark" aria-hidden="true"><svg viewBox="62 16 94 154"><g class="bi-sign__dot"><g transform="rotate(-21 146.5 27.5)"><rect x="142.5" y="23.5" width="8" height="8" rx="1"/></g><g transform="rotate(-21 131 32)"><rect x="124.5" y="25.5" width="13" height="13" rx="1.5"/></g><g transform="rotate(-21 95.5 47.5)"><rect x="77" y="29" width="37" height="37" rx="2.5"/></g></g><path d="M71 97.5 120 79.5V166H71Z"/></svg></span>
+    <span class="bi-sign__name">Bernardo Iannini</span>
+  </a>
+</div>
+</div>
+</footer>
 
   <!-- Scripts: defer mantém a ordem e não bloqueia o parse/LCP -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
