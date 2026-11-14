@@ -38,3 +38,6 @@ dist/
 # logs
 *.log
 npm-debug.log*
+
+# QA local (prints, motioncheck)
+_qa/

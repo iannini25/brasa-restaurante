@@ -191,14 +191,10 @@ function initHeroFrames() {
    ========================================================================= */
 function introTimeline() {
   if (prefersReduced) return;
-  const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 1.1 } });
-  tl.from('.hero__brand', { autoAlpha: 0, y: -14, duration: 0.9 }, 0.1)
-    .from('.nav__list li', { autoAlpha: 0, x: 16, stagger: 0.08, duration: 0.7 }, 0.25)
-    .from('.nav__social', { autoAlpha: 0, duration: 0.7 }, 0.5)
-    .from('.eyebrow', { autoAlpha: 0, y: 18 }, 0.35)
-    .from('.hero__title', { autoAlpha: 0, y: 28 }, 0.45)
-    .from('.hero__sub', { autoAlpha: 0, y: 22 }, 0.62)
-    .from('.hero__actions', { autoAlpha: 0, y: 18 }, 0.74)
+  const tl = gsap.timeline({ defaults: { ease: 'expo.out', duration: 1.2 } });
+  tl.from('.topnav__inner', { autoAlpha: 0, y: -18, duration: 0.9 }, 0.05)
+    .from('.hero__title .line > span', { yPercent: 110, stagger: 0.1 }, 0.15)
+    .from('.hero__content [data-fade]', { autoAlpha: 0, y: 24, stagger: 0.1, duration: 0.9, ease: 'power3.out' }, 0.45)
     .from('.hero__cue', { autoAlpha: 0, duration: 0.8 }, 0.9);
 }
 
@@ -310,23 +306,54 @@ function initNav() {
    Estado de repouso é visível; só "arma" o efeito se houver suporte + movimento.
    ========================================================================= */
 function initReveals() {
-  const items = $$('[data-reveal]');
-  if (!items.length) return;
-  // hook de QA (?static): revela tudo p/ screenshots fiéis. + reduced-motion / sem IO.
-  if (prefersReduced || location.search.includes('static') || !('IntersectionObserver' in window)) return;
-
-  document.documentElement.classList.add('reveals-armed');
-  // rede de segurança: se o observer nunca acordar (ambiente estranho), revela tudo.
-  // Cancelada assim que o observer prova estar vivo — então não força revelar o que
-  // ainda está fora da tela (preserva o efeito de scroll-reveal).
-  const safety = setTimeout(() => items.forEach((el) => el.classList.add('is-in')), 4000);
-  const io = new IntersectionObserver((entries, obs) => {
-    clearTimeout(safety);
-    entries.forEach((en) => {
-      if (en.isIntersecting) { en.target.classList.add('is-in'); obs.unobserve(en.target); }
+  if (prefersReduced || !libsReady || location.search.includes('static')) return;
+  document.documentElement.classList.add('js-motion');
+  $$('[data-reveal]').forEach((el) => {
+    gsap.to(el, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+  });
+  $$('[data-stagger]').forEach((g) => {
+    gsap.from(g.children, { y: 30, autoAlpha: 0, stagger: 0.08, duration: 0.7, ease: 'power2.out',
+      scrollTrigger: { trigger: g, start: 'top 85%', once: true } });
+  });
+  // manifesto em 2 tons: palavra por palavra no scroll
+  $$('[data-scrub-text]').forEach((p) => {
+    p.innerHTML = p.textContent.trim().split(/\s+/).map((w) => `<span class="w">${w}</span>`).join(' ');
+    gsap.fromTo(p.querySelectorAll('.w'), { opacity: 0.22 }, { opacity: 1, stagger: 0.05, ease: 'none',
+      scrollTrigger: { trigger: p, start: 'top 78%', end: 'bottom 45%', scrub: true } });
+  });
+  // contadores
+  $$('[data-count]').forEach((el) => {
+    const n = +el.dataset.count, o = { v: 0 };
+    gsap.to(o, { v: n, duration: 1.6, ease: 'power2.out',
+      scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+      onUpdate: () => { el.textContent = Math.round(o.v); } });
+  });
+  // palavra gigante desliza devagar no scroll
+  $$('[data-giant]').forEach((el) => {
+    gsap.fromTo(el, { xPercent: 8 }, { xPercent: -8, ease: 'none',
+      scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true } });
+  });
+  // prato recortado: parallax saindo do card, flutuação e tilt (só ponteiro fino)
+  $$('[data-tilt]').forEach((wrap) => {
+    const img = wrap.querySelector('img');
+    gsap.fromTo(wrap, { y: 70 }, { y: -50, ease: 'none',
+      scrollTrigger: { trigger: wrap.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true } });
+    if (!img) return;
+    gsap.from(img, { scale: 0.86, rotation: -6, autoAlpha: 0, duration: 1.4, ease: 'expo.out',
+      scrollTrigger: { trigger: wrap, start: 'top 85%', once: true } });
+    gsap.to(img, { yPercent: -3, duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    if (!matchMedia('(pointer: fine)').matches) return;
+    const card = wrap.closest('.sig__card') || wrap;
+    const rx = gsap.quickTo(img, 'rotationX', { duration: 0.6, ease: 'power3.out' });
+    const ry = gsap.quickTo(img, 'rotationY', { duration: 0.6, ease: 'power3.out' });
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+      rx(-py * 12); ry(px * 14);
     });
-  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
-  items.forEach((el) => io.observe(el));
+    card.addEventListener('pointerleave', () => { rx(0); ry(0); });
+  });
 }
 
 /* =========================================================================
@@ -357,10 +384,7 @@ function initScrollnav() {
   const onScroll = () => {
     const y = window.scrollY || window.pageYOffset || 0;
     const vh = window.innerHeight;
-    const heroBottom = heroSection ? heroSection.offsetTop + heroSection.offsetHeight : vh;
-    const past = y > heroBottom - vh * 0.55;
-    if (bar) bar.classList.toggle('is-visible', past);
-    if (!past) { closeScrollnavMenu(); }
+    if (bar) bar.classList.toggle('is-scrolled', y > vh * 0.12);
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
@@ -671,18 +695,18 @@ const I18N = {
   // EN: esqueleto — preenchido para nav, hero, títulos de seção e CTAs.
   // O corpo de texto mais longo cai no PT por ora (TODO: traduzir).
   en: {
-    'nav.inicio': 'Home', 'nav.casa': 'The House', 'nav.origem': 'Origin', 'nav.menu': 'Menu',
+    'nav.inicio': 'Home', 'nav.assinatura': 'Signature', 'hero.chip1': 'Quebracho wood', 'hero.chip2': '45 days of dry-aging', 'hero.chip3': 'Vila Madalena, SP', 'stats.1': 'days of dry-aging', 'stats.2': "seats at the chef's counter", 'stats.3': 'courses in the tasting menu', 'stats.4': 'seating per night, no rush', 'sig.title': 'The dish that <em>opens the night.</em>', 'sig.cta': 'Book to taste it', 'menu.g1': 'Dry-aged ribeye, 300 g', 'menu.g2': '12-hour short rib', 'menu.g3': 'Octopus and seafood over wood', 'nav.casa': 'The House', 'nav.origem': 'Origin', 'nav.menu': 'Menu',
     'nav.experiencia': 'Experience', 'nav.reservas': 'Reservations',
     'nav.contato': 'Contact', 'nav.reservar': 'Book', 'nav.label': 'Menu',
     'brand.tag': 'fire kitchen · SP',
     'hero.eyebrow': 'Live embers · long dry-age',
-    'hero.title': 'Where fire<br /><em>becomes art</em>',
+    'hero.title': '<span class="line"><span>Where fire</span></span> <span class="line"><span><em>becomes art.</em></span></span>',
     'hero.sub': 'Dry-aged cuts over live wood embers. Precise technique, the exact point, and a night considered down to the smallest detail, from the first aroma to the last ember.',
     'hero.cta.reservar': 'Book a table', 'hero.cta.menu': 'See the menu',
-    'hero.dish.name': 'Duck magret', 'hero.dish.desc': 'wine reduction · smoked purée · edible flowers',
+    'hero.dish.name': 'Duck magret', 'hero.dish.desc': 'wine reduction, smoked purée and edible flowers',
     'hero.cue': 'scroll to discover',
     'casa.kicker': 'The method',
-    'casa.title': 'Fire is the method.<br /><em>Precision, the language.</em>',
+    'casa.title': 'We light the wood before the room opens and wait for the embers to mature. Here fire is not just heat: it is flavour, aroma and time.',
     'casa.p1': 'We light the wood before the room opens and let the embers mature until they become an ingredient, not just heat, but flavour, aroma and time.',
     'casa.p2': 'Cooking over live embers means accepting that the fire leads. Our job is to listen: read the colour of the coals, find the exact height of the grill, wait for the right point. Old technique, contemporary obsession.',
     'casa.t1.title': 'Wood, not gas', 'casa.t1.desc': 'Hardwood fire, start to finish. No shortcuts.',
@@ -690,7 +714,7 @@ const I18N = {
     'casa.t3.title': 'The exact point', 'casa.t3.desc': 'Every cut leaves in its own time. The fire decides; we obey.',
     'casa.quote': '“The ember isn’t the end of the dish. It’s the beginning of everything.”',
     'origem.kicker': 'The origin',
-    'origem.title': 'Flavour begins <em>before</em> the fire.',
+    'origem.title': 'Flavour begins <em>before the fire.</em>',
     'origem.lead': 'Good beef doesn’t hide in the embers, it reveals itself in them. That’s why we choose the cut, the origin and the dry-age before lighting the first log.',
     'origem.stat.num': '45', 'origem.stat.unit': 'days',
     'origem.stat.label': 'of dry-aging, to the point of each cut',
@@ -699,30 +723,30 @@ const I18N = {
     'origem.f2.k': 'Fire', 'origem.f2.v': 'Quebracho wood and sourced charcoal',
     'origem.f3.k': 'Waste', 'origem.f3.v': 'Trimmings become stock, fat becomes seasoning',
     'origem.cap': 'From the butcher to the fire: the cut you see is the cut you eat.',
-    'menu.kicker': 'Live fire · à la carte', 'menu.title': 'The menu',
+    'menu.kicker': 'Live fire · à la carte', 'menu.title': 'From the fire, <em>to share.</em>',
     'menu.lead': 'From the fire, plates to share. The menu changes with the seasons and with what the fire asks for that day.',
     'menu.signature': 'signature',
     'menu.note': 'Prices per person, in reais (R$). Dietary restrictions accommodated with advance notice.',
-    'exp.kicker': "Chef's counter", 'exp.title': 'Twelve seats.<br />One fire. One night.',
+    'exp.kicker': "Chef's counter", 'exp.title': 'Twelve seats, one fire <em>and a night of your own.</em>',
     'exp.lead': 'The fullest way to live BRASA is at the chef’s counter, twelve seats facing the embers, where every course is finished in front of you. One seating per night. Limited reservations.',
     'exp.p1.title': 'Fire in front of you', 'exp.p1.text': 'Every dish is seared, smoked and finished at the counter, within reach of your hand, the aroma and the cooks.',
     'exp.p2.title': 'Authorial pairing', 'exp.p2.text': 'Our sommelier leads the night glass by glass, natural wines, sakes and ferments that talk to the smoke of the embers.',
     'exp.p3.title': 'A rhythm all yours', 'exp.p3.text': 'Twelve seats, one seating. From the first fire to the last dessert, the kitchen sets the pace, in its time and yours.',
     'exp.cap': 'From the counter, you watch the fire work.',
-    'exp.cta': 'Claim my seat at the counter', 'exp.cta.note': '12 seats per night · we confirm within 2 hours',
-    'resv.kicker': 'Tue–Sun · from 7pm', 'resv.title': 'Book your table',
+    'exp.cta': 'Claim my seat at the counter', 'exp.cta.note': 'We confirm within 2 hours',
+    'resv.title': 'Book <em>your table.</em>',
     'resv.lead': 'We serve Tuesday to Sunday, from 7pm. For the chef’s counter, book a few days ahead, the twelve seats go fast.',
     'resv.whats': 'Book via WhatsApp',
-    'resv.fact.hours.k': 'Hours', 'resv.fact.hours.v': 'Tue–Sun · from 7pm', 'resv.fact.phone.k': 'Phone', 'resv.fact.reply.k': 'Reply',
+    'resv.fact.hours.k': 'Hours', 'resv.fact.hours.v': 'Tuesday to Sunday, from 7pm', 'resv.fact.phone.k': 'Phone', 'resv.fact.reply.k': 'Reply',
     'resv.fact.reply.v': 'We confirm within 2 hours',
     'form.nome': 'Full name', 'form.data': 'Date', 'form.horario': 'Time', 'form.pessoas': 'Guests',
     'form.obs': 'Notes', 'form.optional': '(optional)', 'form.submit': 'Send reservation request', 'form.or': 'or',
     'form.ambiente': 'Where would you like to sit', 'form.amb.salao': 'Dining room', 'form.amb.salao.hint': 'tables & fire',
     'form.amb.balcao': "Chef's counter", 'form.amb.balcao.hint': '12 seats · 6 courses', 'form.horarios': 'Times with good availability',
     'resv.facts.title': 'The house',
-    'contato.kicker': 'Vila Madalena, SP', 'contato.title': 'Where the fire lives',
+    'contato.kicker': 'Vila Madalena, SP', 'contato.title': 'Where the fire <em>lives.</em>',
     'contato.address.k': 'Address', 'contato.hours.k': 'Hours', 'contato.contact.k': 'Reach us',
-    'contato.hours.v1': 'Tue–Thu · 7pm–11:30pm', 'contato.hours.v2': 'Fri & Sat · 7pm–12:30am', 'contato.hours.v3': 'Sun · 6pm–10:30pm',
+    'contato.hours.v1': 'Tuesday to Thursday, 7pm to 11:30pm', 'contato.hours.v2': 'Friday and Saturday, 7pm to 12:30am', 'contato.hours.v3': 'Sunday, 6pm to 10:30pm',
     'footer.cta.title': 'Light up your night<br /><em>on the embers.</em>', 'footer.cta.btn': 'Book a table',
     'footer.seal': 'fire kitchen · since 2026', 'footer.rights': '© 2026 BRASA. All rights reserved.', 'footer.signBy': 'Made by',
     'somm.title': 'BRASA Sommelier', 'somm.sub': 'Tap a dish and get the right glass.',
@@ -803,7 +827,6 @@ function initParallax() {
 function boot() {
   initI18n();        // idioma primeiro (não depende de libs)
   initNav();
-  initReveals();
   initScrollnav();
   initReservation();
   initSommelier();
@@ -813,6 +836,7 @@ function boot() {
   gsap.registerPlugin(ScrollTrigger);
   initLenis();
   introTimeline();
+  initReveals();
   initParallax();
 
   // Só o desktop tem cena (pin + frames). No mobile/reduced a hero é estática (pôster).
