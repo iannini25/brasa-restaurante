@@ -460,6 +460,7 @@ section[id] { scroll-margin-top: var(--nav-h); }
   .lang-toggle { display: none; }
   .brand__type { letter-spacing: .24em; }
   .tenet, .contato__item { grid-template-columns: 1fr; gap: 6px; }
+  .origem__seal { right: 0; }
   .menu__gallery { grid-template-columns: 1fr 1fr; height: auto; }
   .menu__gallery .card-img { aspect-ratio: 1; }
   .menu__gallery .card-img:nth-child(2) { grid-column: 1 / -1; order: -1; aspect-ratio: 16 / 10; margin-top: 0; }
